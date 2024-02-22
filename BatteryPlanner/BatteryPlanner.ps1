@@ -200,6 +200,8 @@ for($i=0; $i-lt $totalCellsToUse; $i++)
     $lastUsedBatteryIndex++
 }
 
+log "          mAhArray - $mAhArray" $showLog
+log "arrCleanCellsToUse - $arrCleanCellsToUse" $showLog
 log "notUsedCells1: $notUsedCells" $showLog 
 
 # Write-Host "lastUsedBatteryIndex: $lastUsedBatteryIndex"
@@ -221,6 +223,7 @@ if( ($csvSeries -eq $null) -or ($csvSeries -eq "") )
 # Sort descending and ascending
 ################################################################
 $arrCellsMax2Min = $arrCleanCellsToUse | Sort-Object -Descending
+log "arrCellsMax2Min - $arrCellsMax2Min" $showLog
 # $arrCellsMin2Max = $arrCleanCellsToUse | Sort-Object
 # Write-Host "arrCellsMax2Min: $arrCellsMax2Min"
 # Write-Host "arrCellsMin2Max: $arrCellsMin2Max"

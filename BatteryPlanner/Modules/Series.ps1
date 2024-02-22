@@ -81,11 +81,12 @@ function SeriesCreateFromOlder($series , [ref]$maxCellsPerSerie , $oldSeries, $C
 
     #Test if the old series are greater than the max series calculation
     log "SeriesCreateFromOlder - oldSeries.GetUpperBound(0) = $($oldSeries.GetUpperBound(0))" $showLog    
-    if($oldSeries.GetUpperBound(0) -gt $maxCellsPerSerie.Value)
+    log "SeriesCreateFromOlder - total = $($oldSeries.GetUpperBound(0)+1)" $showLog    
+    if(($oldSeries.GetUpperBound(0)+1) -gt $maxCellsPerSerie.Value)
     {
         log "SeriesCreateFromOlder - greater " $showLog    
 
-        $maxCellsPerSerie.Value = $oldSeries.GetUpperBound(0)
+        $maxCellsPerSerie.Value = $oldSeries.GetUpperBound(0)+1
     }    
 
     log "SeriesCreateFromOlder - maxCellsPerSerie.Value = $($maxCellsPerSerie.Value)" $showLog    
@@ -176,7 +177,10 @@ function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $C
         $hashTotalmAhPerSerie = hashSumAllValuesFromArray $CellsPerSeries $series $maxCellsPerSerie
     }
 
-    log "SeriesAproach2AvgMAh - hashTotalmAhPerSerie: $hashTotalmAhPerSerie" $showLog
+    for ($totalPerSerie=0; $totalPerSerie -lt $series; $totalPerSerie++)
+    {
+        log "SeriesAproach2AvgMAh - hashTotalmAhPerSerie: $totalPerSerie : $($hashTotalmAhPerSerie[$totalPerSerie])" $showLog
+    }     
 
     
     # ForEach ($item in $hashTotalmAhPerSerie.Keys) {
@@ -206,7 +210,7 @@ function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $C
  
     for ($i=($serieInitial); $i -lt $arrCellsMax2Min.Count; $i++)
     {
-        log "SeriesAproach2AvgMAh - i: $i" $showLog
+        log "SeriesAproach2AvgMAh - foreach i: $i" $showLog
 
         if($arrCellsMax2Min[$i] -ne 0)
         {
@@ -258,18 +262,19 @@ function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $C
             # Write-Host "SeriesAproach2AvgMAh: serieIndex: $serieIndex"
 
             $total = [int]$hashTotalmAhPerSerie[$serieIndex]
-            # Write-Host "SeriesAproach2AvgMAh: total: $total"
-            # Write-Host "SeriesAproach2AvgMAh: cell mAh: $cellmAh"        
+            log "SeriesAproach2AvgMAh - current mAh total in serie: $total " $showLog 
+            log "SeriesAproach2AvgMAh - new mAh to add: $cellmAh " $showLog             
             $total += [int]$cellmAh
-            # Write-Host "SeriesAproach2AvgMAh: total: $total"
             $hashTotalmAhPerSerie.Set_Item($serieIndex, $total)
-
-            log "SeriesAproach2AvgMAh - hashTotalmAhPerSerie.Set_Item: $serieIndex - $total" $showLog 
             
-            for ($i=0; $i -lt $series; $i++)
+            log "SeriesAproach2AvgMAh - new mAh total in serie: $total " $showLog           
+            
+            log "SeriesAproach2AvgMAh - hashTotalmAhPerSerie.Set_Item: $serieIndex - $total " $showLog 
+            
+            for ($totalPerSerie=0; $totalPerSerie -lt $series; $totalPerSerie++)
             {
-                log "SeriesAproach2AvgMAh - hashTotalmAhPerSerie: $i : $($hashTotalmAhPerSerie[$i])" $showLog
-            }                  
+                log "SeriesAproach2AvgMAh - hashTotalmAhPerSerie: $totalPerSerie : $($hashTotalmAhPerSerie[$totalPerSerie])" $showLog
+            }                 
             
             # Write-Host "SeriesAproach2AvgMAh: CellsPerSeries before: $CellsPerSeries"
 
@@ -290,10 +295,10 @@ function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $C
         }                 
     }
 
-    for ($i=0; $i -lt $series; $i++)
+    for ($totalPerSerie=0; $totalPerSerie -lt $series; $totalPerSerie++)
     {
-        log "SeriesAproach2AvgMAh - hashTotalmAhPerSerie: $i : $($hashTotalmAhPerSerie[$i])" $showLog
-    }
+        log "SeriesAproach2AvgMAh - hashTotalmAhPerSerie: $totalPerSerie : $($hashTotalmAhPerSerie[$totalPerSerie])" $showLog
+    }   
 
     log "SeriesAproach2AvgMAh - indexUsedCell: $indexUsedCell" $showLog
     log "SeriesAproach2AvgMAh --<" $showLog
