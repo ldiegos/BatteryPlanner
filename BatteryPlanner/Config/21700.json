@@ -1,0 +1,6 @@
+{
+    "name":"21700",
+    "nominalVoltage":"3.7",
+    "minimumVoltage":"2.5",    
+    "maximumVoltage":"4.2"
+}   

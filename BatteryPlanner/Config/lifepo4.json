@@ -1,0 +1,6 @@
+{
+    "name":"lifepo4",
+    "nominalVoltage":"3.2",
+    "minimumVoltage":"2.0",    
+    "maximumVoltage":"3.6"
+}   

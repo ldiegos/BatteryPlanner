@@ -1,0 +1,6 @@
+{
+    "name":"AGM",
+    "nominalVoltage":"12",
+    "minimumVoltage":"11.9",    
+    "maximumVoltage":"12.7"
+}   
