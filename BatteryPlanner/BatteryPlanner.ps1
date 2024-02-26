@@ -286,11 +286,11 @@ log "Number of series: $series"  $showSummary
 log "Number of cells per pack: $cellsPerPack"  $showSummary 
 log "Cells in each serie(TotalCells/series): $maxCellsPerSerie"  $showSummary 
 # printPrintSeriesInLines $series $maxCellsPerSerie $CellsPerSeries
-printPrintSeriesInColumns $series $maxCellsPerSerie $CellsPerSeries
+printPrintSeriesInColumns $series $maxCellsPerSerie $CellsPerSeries $cellsPerPack
 printPrintTotalmAhInColumns  $series $maxCellsPerSerie $CellsPerSeries
 log "Cells not used: $notUsedCells"  $showSummary 
 
-$avgmAh = SeriesTotalmAhAvg $CellsPerSeries $series $maxCellsPerSerie
+$avgmAh = SeriesTotalmAhAvg $CellsPerSeries $series $maxCellsPerSerie 
 
 # $batteryVolts = totalVolts $nominalVolts $series
 $volts = [decimal]$celltypeConfiguration.maximumVoltage

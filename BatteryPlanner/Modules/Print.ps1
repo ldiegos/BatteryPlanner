@@ -14,10 +14,16 @@ function printPrintSeriesInLines($series, $maxCellsPerSerie,$CellsPerSeries)
     }
 }
 
-function printPrintSeriesInColumns($series, $maxCellsPerSerie,$CellsPerSeries)
+function printPrintSeriesInColumns($series, $maxCellsPerSerie, $CellsPerSeries, $cellsPerPack)
 {
     $printHeader = ""
     $printSeries = ""
+
+    $showLog = $false
+
+    log "printPrintSeriesInColumns- ->"  $showLog   
+
+    log "printPrintSeriesInColumns- series: $series - maxCellsPerSerie: $maxCellsPerSerie - cellsPerPack: $cellsPerPack" $showLog    
 
     for ($serie = 0; $serie -lt $series; $serie ++)
     {
@@ -26,11 +32,22 @@ function printPrintSeriesInColumns($series, $maxCellsPerSerie,$CellsPerSeries)
 
     log "$printHeader" $true
 
+    $count2line = 0
+
     for ($j = 0; $j -lt $maxCellsPerSerie;$j++)
     {
         for ($i = 0; $i -lt $series; $i++)
         {       
             $printSeries += [string]"$($CellsPerSeries[$i,$j])`t"
+
+            log "printPrintSeriesInColumns- $count2line = $cellsPerPack -and $i = $series"  $showLog   
+
+            if( ( ($j+1) % $cellsPerPack -eq 0) -and ($i -eq $series-1) )
+            {                
+                $count2line++                
+                $printSeries += [string]"`n $count2line --------------------------"
+            }
+
         }
         if( ($j +1 )-ne $maxCellsPerSerie )
         {
@@ -40,9 +57,7 @@ function printPrintSeriesInColumns($series, $maxCellsPerSerie,$CellsPerSeries)
     }  
 
     log "$printSeries" $true
-    Write-Host "--------------"
-
-
+    log "printPrintSeriesInColumns- -<"  $showLog
 }
 
 function printPrintTotalmAhInColumns($series, $maxCellsPerSerie,$CellsPerSeries)
