@@ -14,7 +14,7 @@ function printPrintSeriesInLines($series, $maxCellsPerSerie,$CellsPerSeries)
     }
 }
 
-function printPrintSeriesInColumns($series, $maxCellsPerSerie, $CellsPerSeries, $cellsPerPack , [ref]$packsMaxPerSerie )
+function printPrintSeriesInColumns($series, $maxCellsPerSerie, $CellsPerSeries, $cellsPerPack , $packsMaxPerSerie )
 {
     $printHeader = ""
     $printSeries = ""
@@ -56,7 +56,7 @@ function printPrintSeriesInColumns($series, $maxCellsPerSerie, $CellsPerSeries, 
 
     }  
 
-    $packsMaxPerSerie.Value = $count2line    
+    $packsMaxPerSerie = $count2line    
 
     log "$printSeries" $true
     log "printPrintSeriesInColumns- -<"  $showLog

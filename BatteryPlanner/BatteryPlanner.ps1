@@ -285,7 +285,7 @@ $CellsPerSeries = SeriesAproach2AvgMAh $series ([ref]$maxCellsPerSerie) $arrCell
 
 log "notUsedCells3: $notUsedCells" $showLog 
 
-printPrintSeriesInColumns $series $maxCellsPerSerie $CellsPerSeries $cellsPerPack ([ref]$packsMaxPerSerie)
+printPrintSeriesInColumns $series $maxCellsPerSerie $CellsPerSeries $cellsPerPack $packsMaxPerSerie
 
 log "packsMaxPerSerie - $packsMaxPerSerie" $showLog 
 
