@@ -154,6 +154,8 @@ function hashSumAllValuesFromArray($CellsPerSeries , $series, $maxCellsPerSerie)
     log "hashSumAllValuesFromArray - series: $series - maxCellsPerSerie: $($maxCellsPerSerie.Value) - CellsPerSeries : $CellsPerSeries" $showlog
 
     $hashTotalmAhPerSerie = @{}
+    $total = 0
+    $cellmAh = 0
 
     for($i= 0; $i -lt $series; $i++)
     {
@@ -163,13 +165,17 @@ function hashSumAllValuesFromArray($CellsPerSeries , $series, $maxCellsPerSerie)
 
         for($j=1; $j -lt $maxCellsPerSerie.Value; $j++)
         {
-            $cellmAh = [int]$CellsPerSeries[$i,$j]
-            $total = [int]$hashTotalmAhPerSerie[$i]
+            log "hashSumAllValuesFromArray - CellsPerSeries[$i,$j]: $($CellsPerSeries[$i,$j])" $showlog            
+
+            $cellmAh = [int]$($CellsPerSeries[$i,$j])
+            log "hashSumAllValuesFromArray - cellmAh: $cellmAh" $showlog
+            $total = $hashTotalmAhPerSerie[$i].Value
+            log "hashSumAllValuesFromArray - total: $total" $showlog
             # Write-Host "SeriesAproach2AvgMAh: total: $total"
             # Write-Host "SeriesAproach2AvgMAh: cell mAh: $cellmAh"        
             $total += [int]$cellmAh
             # Write-Host "SeriesAproach2AvgMAh: total: $total"
-            # log "hashSumAllValuesFromArray - $i - $($total)" $showlog
+            log "hashSumAllValuesFromArray - $i - $j - $total" $showlog
             $hashTotalmAhPerSerie.Set_Item($i, $total)
         }
     }    

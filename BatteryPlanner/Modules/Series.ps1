@@ -462,8 +462,13 @@ function SeriesCleanPacksPerSerie($series , $maxCellsPerSerie , $cellsPerPack , 
         {
             $lastCell = ($maxCellsPerSerie - 1) - $cell
             log "SeriesCleanPacksPerSerie - lastCell = $lastCell"  $showLog
-            $notUsedCells.Value += "$($CellsPerSeries[$serie, $lastCell]),"
-            log "SeriesCleanPacksPerSerie - notUsedCells.Value = $($notUsedCells.Value)"  $showLog
+            log "SeriesCleanPacksPerSerie - lastCell = $lastCell"  $showLog
+            if ( $($CellsPerSeries[$serie, $lastCell]) -ne 0)
+            {
+                $notUsedCells.Value += "$($CellsPerSeries[$serie, $lastCell]),"
+                log "SeriesCleanPacksPerSerie - notUsedCells.Value = $($notUsedCells.Value)"  $showLog                
+            }
+                        
             $CellsPerSeries[$serie, $lastCell] = 0
         }
     }

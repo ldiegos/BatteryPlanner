@@ -189,7 +189,7 @@ log "Total cells to use: $totalCellsToUse" $showSummary
 if($cellsPerPack -gt 1)
 {
     $packsMaxPerSerie = [Math]::Floor(($maxCellsPerSerie / $cellsPerPack))
-    log "Packs max in each serie: $packsMaxPerSerie" $showLog 
+    log "Packs max in each serie from scratch: $packsMaxPerSerie" $showLog 
 }
 else 
 {
@@ -273,19 +273,24 @@ if ($csvSeries -ne "")
     $restCellsPerSerie = [Math]::Floor([decimal]($arrCellsMax2Min.Count / $series)) 
     log "restCellsPerSerie - $restCellsPerSerie" $showLog 
 
-    # $maxCellsPerSerie += $restCellsPerSerie
+    $maxCellsPerSerie += $restCellsPerSerie
+
+    $packsMaxPerSerie = [Math]::Floor(($maxCellsPerSerie / $cellsPerPack))
+    log "Packs max in each serie after created from older: $packsMaxPerSerie" $showLog 
 
 }
 
 log "maxCellsPerSerie - $maxCellsPerSerie" $showLog 
 
-# $CellsPerSeries = resizeBidimensionalArray $series $maxCellsPerSerie $CellsPerSeries
+log "CellsPerSeries - $CellsPerSeries" $showLog 
+$CellsPerSeries = resizeBidimensionalArray $series $maxCellsPerSerie $CellsPerSeries
+log "CellsPerSeries - $CellsPerSeries" $showLog 
 
 $CellsPerSeries = SeriesAproach2AvgMAh $series ([ref]$maxCellsPerSerie) $arrCellsMax2Min $CellsPerSeries ([ref]$notUsedCells) 
 
 log "notUsedCells3: $notUsedCells" $showLog 
 
-printPrintSeriesInColumns $series $maxCellsPerSerie $CellsPerSeries $cellsPerPack $packsMaxPerSerie
+# printPrintSeriesInColumns $series $maxCellsPerSerie $CellsPerSeries $cellsPerPack $packsMaxPerSerie
 
 log "packsMaxPerSerie - $packsMaxPerSerie" $showLog 
 
