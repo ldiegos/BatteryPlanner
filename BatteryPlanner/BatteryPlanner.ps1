@@ -25,6 +25,18 @@ param ($cellType, $csvFileFullPath, $csvSeries, $series, $cellsPerPack, $outputP
 # .\BatteryPlanner.ps1 -cellType 18650 -csvFileFullPath "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\Data\all_batteries.csv" -csvSeries "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\Data\LockSeries_4S_test.tsv" -series 4 -cellsPerPack 8
 # .\BatteryPlanner.ps1 -cellType 18650 -csvFileFullPath "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\Data\AllBatteries1600-1900_20231118.csv" -series 3 -cellsPerPack 6
 
+# 4S - 8Packs
+# .\BatteryPlanner.ps1 -cellType 18650 -csvFileFullPath "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\all_batteries.csv" -csvSeries "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\LockSeries_4S8Packs.tsv" -series 4 -cellsPerPack 8
+# .\BatteryPlanner.ps1 -cellType 18650 -csvFileFullPath "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\all_batteries.csv" -csvSeries "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\LockSeries_4S8Packs_initial.tsv" -series 4 -cellsPerPack 8
+# .\BatteryPlanner.ps1 -cellType 18650 -csvFileFullPath "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\all_batteries.csv" -csvSeries "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\LockSeries_4S8Packs_final.tsv" -series 4 -cellsPerPack 8
+
+# 6S - 8Packs
+# .\BatteryPlanner.ps1 -cellType 18650 -csvFileFullPath "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\all_batteries.csv" -csvSeries "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\LockSeries_6S8Packs.tsv" -series 6 -cellsPerPack 8
+# .\BatteryPlanner.ps1 -cellType 18650 -csvFileFullPath "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\pending_batteries.csv" -series 6 -cellsPerPack 8
+
+# 8s
+# .\BatteryPlanner.ps1 -cellType 18650 -csvFileFullPath "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\all_batteries.csv" -csvSeries "E:\GoogleDrive\My Drive\Aplicaciones\PowerShell\BatteryPlanner\BatteryPlanner\Data\LockSeries_8S.tsv" -series 8 -cellsPerPack 8
+
 
 $showLog = $false
 $showSummary = $true
@@ -53,6 +65,7 @@ $ModSeries = Join-Path $directorypath 'Modules\Series.ps1'
 $ModVAW = Join-Path $directorypath 'Modules\VAW.ps1' #Voltage methdos, amphere methods and watage methods.
 $ModPrint = Join-Path $directorypath 'Modules\Print.ps1' #Print output methods
 $ModLog = Join-Path $directorypath 'Modules\Log.ps1' #Print output methods
+$ModArray = Join-Path $directorypath 'Modules\Array.ps1' #Print output methods
 
 # $AzDatabaseServerMethods = Join-Path $directorypathGlobal '\Azure\Database\AzDatabaseServerMethods.ps1'
 # $AzureKeyVaultMethods = Join-Path $directorypathGlobal '\Azure\KeyVault\AzKeyVaultMethods.ps1'
@@ -66,6 +79,7 @@ $ModLog = Join-Path $directorypath 'Modules\Log.ps1' #Print output methods
 . $ModVAW
 . $ModPrint
 . $ModLog
+. $ModArray
 
 
 log "Config directory: {$directorypathConfig}" $showLog 
@@ -117,43 +131,42 @@ switch ( $cellType )
 
 $celltypeConfiguration = Get-Content -Path $ConfigPath | ConvertFrom-Json
 
+# $allbatteries = Get-Content -Path "Data\all_bateries.json" | ConvertFrom-Json
+# $all_csv = ""
+
+# foreach($list in $allbatteries.all_bateries.battery_lists)
+# {
+#     echo $list
+#     $all_csv+=$list.csv+','
+# }
+
+# $all_csv
+
+
 $list = Get-Content -Path $csvFileFullPath
 # Write-Host "$list"
 
-$mAhArray = $list.Split(",")
+$mAhinArray = $list.Split(",")
 # Write-Host "$mAhArray"
 $list = ""
 # $mAhArray
-# Write-Host "CSV as is: $mAhArray"
+# Write-Host "CSV as is: $mAhinArray"
+# Write-Host "CSV count: $($mAhinArray.Count)"
+
 # Write-Host "---------------------------------------------------------------------------------------------------------------------"
-$mAhArray = $mAhArray | Sort-Object -Descending
+$mAhArray = $mAhinArray | Sort-Object -Descending
 # Write-Host "Sorted capacity: $mAhArray"
+# Write-Host "Sorted capacity: $($mAhArray.Count)"
 # Write-Host "---------------------------------------------------------------------------------------------------------------------"
 
 # $mAhArray.Count
 # $mAhArray.Length
 # $mAhArray.GetUpperBound(0)
 # $maxCellsPerSerie = [int]($mAhArray.Count / $series)
+
 $maxCellsPerSerie = [Math]::Floor([decimal]($mAhArray.Count / $series)) 
 $totalCellsToUse = [int] $maxCellsPerSerie * $series
 
-# # Write-Host "TotalCells: "$mAhArray.GetUpperBound(0)
-# Write-Host "*********************************************************************************************************************"
-# Write-Host "DATA: "
-# Write-Host "*********************************************************************************************************************"
-# Write-Host "Cell type: $cellType"
-# # Write-Host "celltypeConfiguration.name : $($celltypeConfiguration.name)"
-# Write-Host "cell nominal voltage : $($celltypeConfiguration.nominalVoltage)"
-# Write-Host "cell minimun voltage : $($celltypeConfiguration.minimumVoltage)"
-# Write-Host "cell maximun voltage : $($celltypeConfiguration.maximumVoltage)"
-# Write-Host "cell minimun discharge voltage : $($celltypeConfiguration.limitVoltageDischarge)"
-# Write-Host "cell maximun charge voltage : $($celltypeConfiguration.limitVoltageCharge)"
-# Write-Host "Series already created: $csvSeries"
-# Write-Host "Number of series: $series"
-# Write-Host "Number of cells per pack: $cellsPerPack"
-# Write-Host "Total cells in csv: "$mAhArray.Count
-# Write-Host "Cells in each serie(TotalCells/series): $maxCellsPerSerie"
-# Write-Host "Total cells to use: $totalCellsToUse"
 
 log "*********************************************************************************************************************" $showSummary 
 log "DATA: " $showSummary 
@@ -170,7 +183,7 @@ log "Series already created: $csvSeries" $showSummary
 log "Number of series: $series" $showSummary 
 log "Number of cells per pack: $cellsPerPack" $showSummary 
 log "Total cells in csv: $($mAhArray.Count)" $showSummary 
-log "Cells in each serie(TotalCells/series): $maxCellsPerSerie" $showSummary 
+log "Cells in each serie from scratch(TotalCells/series): $maxCellsPerSerie" $showSummary 
 log "Total cells to use: $totalCellsToUse" $showSummary 
 
 if($cellsPerPack -gt 1)
@@ -248,27 +261,39 @@ if ($csvSeries -ne "")
     $CellsPerSeries = SeriesCreateFromOlder $series ([ref]$maxCellsPerSerie) $oldSeries $CellsPerSeries
     $arrCellsMax2Min = arrDeleteValuesFromArray $arrCellsMax2Min $series $maxCellsPerSerie $CellsPerSeries
     $arrCellsMax2Min = $arrCellsMax2Min | Sort-Object -Descending
+
     log "arrCellsMax2Min - $arrCellsMax2Min" $showLog 
+    log "arrCellsMax2Min - $($arrCellsMax2Min.Count)" $showLog 
+    log "CellsPerSeries - $CellsPerSeries" $showLog 
+    log "maxCellsPerSerie - $maxCellsPerSerie" $showLog 
+
+    # clean all zeroed values.
+    $arrCellsMax2Min = $arrCellsMax2Min -ne 0
+    log "arrCellsMax2Min - $($arrCellsMax2Min.Count)" $showLog    
+    $restCellsPerSerie = [Math]::Floor([decimal]($arrCellsMax2Min.Count / $series)) 
+    log "restCellsPerSerie - $restCellsPerSerie" $showLog 
+
+    # $maxCellsPerSerie += $restCellsPerSerie
+
 }
 
-# if ($packsMaxPerSerie -gt 1 )
-# {
-#     Write-Host "$maxCellsPerSerie - $packsMaxPerSerie - Result: $($maxCellsPerSerie / $packsMaxPerSerie)"
-# }
+log "maxCellsPerSerie - $maxCellsPerSerie" $showLog 
 
+# $CellsPerSeries = resizeBidimensionalArray $series $maxCellsPerSerie $CellsPerSeries
 
-$CellsPerSeries = SeriesAproach2AvgMAh $series $maxCellsPerSerie $arrCellsMax2Min $CellsPerSeries ([ref]$notUsedCells)
+$CellsPerSeries = SeriesAproach2AvgMAh $series ([ref]$maxCellsPerSerie) $arrCellsMax2Min $CellsPerSeries ([ref]$notUsedCells) 
 
 log "notUsedCells3: $notUsedCells" $showLog 
 
-# printPrintSeriesInColumns $series $maxCellsPerSerie $CellsPerSeries
-# printPrintTotalmAhInColumns  $series $maxCellsPerSerie $CellsPerSeries
+printPrintSeriesInColumns $series $maxCellsPerSerie $CellsPerSeries $cellsPerPack ([ref]$packsMaxPerSerie)
 
+log "packsMaxPerSerie - $packsMaxPerSerie" $showLog 
 
 if($cellsPerPack -gt 1)
 {
     $CellsPerSeries = SeriesCleanPacksPerSerie $series $maxCellsPerSerie $cellsPerPack $packsMaxPerSerie $CellsPerSeries ([ref]$notUsedCells)
 }
+
 
 log "notUsedCells4: $notUsedCells" $showLog 
 # Write-Host "CellsPerSeries: $CellsPerSeries"
@@ -545,3 +570,4 @@ avgCapacity $arrSeriesTotalCapacity
 # $a= ,@(1,2,3)
 # $a+=,@(4,5,6)
 # $a|%{"$_"}
+

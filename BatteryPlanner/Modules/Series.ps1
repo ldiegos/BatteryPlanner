@@ -81,12 +81,15 @@ function SeriesCreateFromOlder($series , [ref]$maxCellsPerSerie , $oldSeries, $C
 
     #Test if the old series are greater than the max series calculation
     log "SeriesCreateFromOlder - oldSeries.GetUpperBound(0) = $($oldSeries.GetUpperBound(0))" $showLog    
+    log "SeriesCreateFromOlder - oldSeries.Count = $($oldSeries.Count)" $showLog    
     log "SeriesCreateFromOlder - total = $($oldSeries.GetUpperBound(0)+1)" $showLog    
-    if(($oldSeries.GetUpperBound(0)+1) -gt $maxCellsPerSerie.Value)
+    log "SeriesCreateFromOlder - maxCellsPerSerie = $($maxCellsPerSerie.Value)" $showLog    
+    
+    if(($oldSeries.Count) -gt $maxCellsPerSerie.Value)
     {
-        log "SeriesCreateFromOlder - greater " $showLog    
+        log "SeriesCreateFromOlder - oldSeries greater than maxCellsPerSerie " $showLog    
 
-        $maxCellsPerSerie.Value = $oldSeries.GetUpperBound(0)+1
+        $maxCellsPerSerie.Value = $oldSeries.Count
     }    
 
     log "SeriesCreateFromOlder - maxCellsPerSerie.Value = $($maxCellsPerSerie.Value)" $showLog    
@@ -98,7 +101,7 @@ function SeriesCreateFromOlder($series , [ref]$maxCellsPerSerie , $oldSeries, $C
     for ($i=0; $i -lt $series; $i++)
     {
         # for($j = 0; $j -lt $maxCellsPerSerie.Value; $j++)
-        for($j = 0; $j -lt $oldSeries.GetUpperBound(0); $j++)        
+        for($j = 0; $j -lt $oldSeries.Count; $j++)        
         {
             # $CellsPerSeries[$i,$j] = $oldSeries[$j].($i+1)
 
@@ -110,8 +113,8 @@ function SeriesCreateFromOlder($series , [ref]$maxCellsPerSerie , $oldSeries, $C
     }
 
 
-    log "SeriesCreateFromOlder - $($maxCellsPerSerie.Value)" $showLog
-    log "SeriesCreateFromOlder - $CellsPerSeries" $showLog
+    log "SeriesCreateFromOlder - maxCellsPerSerie: $($maxCellsPerSerie.Value)" $showLog
+    log "SeriesCreateFromOlder - CellsPerSeries: $CellsPerSeries" $showLog
 
     log "SeriesCreateFromOlder --<" $showLog
 
@@ -124,7 +127,7 @@ function SeriesCreateFromOlder($series , [ref]$maxCellsPerSerie , $oldSeries, $C
     Create the series maintaining the average capacity between them.
 
 #>
-function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $CellsPerSeries, [ref]$notUsedCells)
+function SeriesAproach2AvgMAh($series , [ref]$maxCellsPerSerie , $arrCellsMax2Min, $CellsPerSeries, [ref]$notUsedCells )
 {
     $showLog = $false
 
@@ -134,7 +137,11 @@ function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $C
 
     # Write-Host "SeriesAproach2AvgMAh: series: $series" 
     # Write-Host "SeriesAproach2AvgMAh: arrCellsMax2Min: $arrCellsMax2Min" 
+    
+    log "SeriesAproach2AvgMAh - CellsPerSeries: $CellsPerSeries" $showLog
     log "SeriesAproach2AvgMAh - arrCellsMax2Min: $arrCellsMax2Min" $showLog
+    log "SeriesAproach2AvgMAh - notUsedCells:  $($notUsedCells.Value)" $showLog
+    log "SeriesAproach2AvgMAh - maxCellsPerSerie:  $($maxCellsPerSerie.Value)" $showLog
 
     
     $hashTotalmAhPerSerie = @{}
@@ -173,8 +180,12 @@ function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $C
     }
     else 
     {
+        log "SeriesAproach2AvgMAh - There is already some mAh in the current configuration" $showLog
+
         #Sum all the values from each serie into the $hashTotalmAhPerSerie
         $hashTotalmAhPerSerie = hashSumAllValuesFromArray $CellsPerSeries $series $maxCellsPerSerie
+
+        log "SeriesAproach2AvgMAh - There is already some mAh in the current configuration" $showLog
     }
 
     for ($totalPerSerie=0; $totalPerSerie -lt $series; $totalPerSerie++)
@@ -280,11 +291,15 @@ function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $C
 
             $CellsPerSeries = arrAddValueToMatrixLastPosition $maxCellsPerSerie $CellsPerSeries $serieIndex $cellmAh ([ref]$positionFound)
             # Write-Host "SeriesAproach2AvgMAh: positionFound after: $($positionFound)"
+            log "SeriesAproach2AvgMAh: : positionFound after: $($positionFound)" $showLog
 
+            # If the current series are at the end, where no more positions with zero, but we continue having more cells to process then, start resizing the arrays.
             if($positionFound -ne $true)
             {
+            
                 $notUsedCells.Value += "$($cellmAh),"
-                # Write-Host "SeriesAproach2AvgMAh: notUsedCells after: $($notUsedCells.Value)"
+                Write-Host "SeriesAproach2AvgMAh: notUsedCells after: $($notUsedCells.Value)"
+                log "SeriesAproach2AvgMAh: notUsedCells after: $($notUsedCells.Value)" $showLog                
             }
 
             # Write-Host "SeriesAproach2AvgMAh: CellsPerSeries after: $CellsPerSeries"
@@ -292,8 +307,19 @@ function SeriesAproach2AvgMAh($series , $maxCellsPerSerie , $arrCellsMax2Min, $C
             # Write-Host "------------------------------------------------------------------------------------"
             
             $serieIndex = 0
-        }                 
-    }
+        } #if($arrCellsMax2Min[$i] -ne 0)                
+    } #for ($i=($serieInitial); $i -lt $arrCellsMax2Min.Count; $i++)
+
+    log "SeriesAproach2AvgMAh: arrAddValueToMatrixLastPosition: $CellsPerSeries" $showLog
+    log "SeriesAproach2AvgMAh: CellsPerSeries.GetUpperBound(0) $($CellsPerSeries.GetUpperBound(0))" $showLog        
+
+    for ($serie = 0; $serie -lt $series; $serie++)
+    {
+        for ($column = 0; $column -lt $CellsPerSeries.GetUpperBound(0); $column++)        
+        {
+            log "SeriesAproach2AvgMAh: arrAddValueToMatrixLastPosition: $($CellsPerSeries[$serie,$column])"  $showLog
+        }
+    }    
 
     for ($totalPerSerie=0; $totalPerSerie -lt $series; $totalPerSerie++)
     {
@@ -329,21 +355,23 @@ function SearchForSeriesWithEmptySpaces($CellsPerSeries , $series, $maxCellsPerS
 
     for ($serie = 0; $serie -lt $series; $serie++)
     {
-        for($cell = 0; $cell -lt $maxCellsPerSerie; $cell++)
+        for($cell = 0; $cell -lt $maxCellsPerSerie.Value; $cell++)
         {
             if ($CellsPerSeries[$serie, $cell] -eq 0)
             {
                 if ( ($hashEmptySeries[$serie] -eq $null) )
                 {
                     $hashEmptySeries.Add($serie, 1)    
-                    log "SearchForSeriesWithEmptySpaces - add"  $showLog
+                    log "SearchForSeriesWithEmptySpaces - add serie: $serie -  total:  1 "  $showLog
+                    # log "SearchForSeriesWithEmptySpaces - add"  $showLog
                 }
                 else 
                 {   
                     $total = $hashEmptySeries[$serie]++
                     $total ++
                     $hashEmptySeries.Set_Item($serie, $total)
-                    log "SearchForSeriesWithEmptySpaces - update"  $showLog
+                    # log "SearchForSeriesWithEmptySpaces - update: serie: $serie -  total: $total "  $showLog
+                    # log "SearchForSeriesWithEmptySpaces - update"  $showLog
                 }            
             }
         }        

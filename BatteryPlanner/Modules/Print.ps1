@@ -14,7 +14,7 @@ function printPrintSeriesInLines($series, $maxCellsPerSerie,$CellsPerSeries)
     }
 }
 
-function printPrintSeriesInColumns($series, $maxCellsPerSerie, $CellsPerSeries, $cellsPerPack)
+function printPrintSeriesInColumns($series, $maxCellsPerSerie, $CellsPerSeries, $cellsPerPack , [ref]$packsMaxPerSerie )
 {
     $printHeader = ""
     $printSeries = ""
@@ -40,12 +40,12 @@ function printPrintSeriesInColumns($series, $maxCellsPerSerie, $CellsPerSeries, 
         {       
             $printSeries += [string]"$($CellsPerSeries[$i,$j])`t"
 
-            log "printPrintSeriesInColumns- $count2line = $cellsPerPack -and $i = $series"  $showLog   
+            # log "printPrintSeriesInColumns- $count2line = $cellsPerPack -and $i = $series"  $showLog   
 
             if( ( ($j+1) % $cellsPerPack -eq 0) -and ($i -eq $series-1) )
             {                
                 $count2line++                
-                $printSeries += [string]"`n $count2line --------------------------"
+                $printSeries += [string]"`n $count2line -"
             }
 
         }
@@ -53,8 +53,10 @@ function printPrintSeriesInColumns($series, $maxCellsPerSerie, $CellsPerSeries, 
         {
             $printSeries += "`n"
         }
-        
+
     }  
+
+    $packsMaxPerSerie.Value = $count2line    
 
     log "$printSeries" $true
     log "printPrintSeriesInColumns- -<"  $showLog

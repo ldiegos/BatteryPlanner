@@ -16,16 +16,17 @@ function arrAddValueToMatrixLastPosition($maxCellsPerSerie , $CellsPerSeries , $
 
     $lastPositionFound.Value = $false
 
-    for($j= 0; $j -lt $maxCellsPerSerie; $j++)
+    for($j= 0; $j -lt $maxCellsPerSerie.Value; $j++)
     {
         if ( ($CellsPerSeries[$serieIndex, $j] -eq 0) -and ($lastPositionFound.Value -ne $true) )
         {
             $CellsPerSeries[$serieIndex, $j] =  $cellmAh
-            # log "arrAddValueToMatrixLastPosition -$serieIndex - $j - $cellmAh" 
+            log "arrAddValueToMatrixLastPosition -$serieIndex - $j - $cellmAh" 
             $lastPositionFound.Value = $true
         }
     }
-    # log "arrAddValueToMatrixLastPosition -lastPositionFound: $($lastPositionFound.Value)" 
+
+    log "arrAddValueToMatrixLastPosition -lastPositionFound: $($lastPositionFound.Value)" 
     log "arrAddValueToMatrixLastPosition --<" 
 
     return ,$CellsPerSeries
@@ -44,6 +45,7 @@ function arrDeleteValuesFromArray($arrCellsMax2Min , $series , $maxCellsPerSerie
     for( $k = 0 ; $k -le $arrCellsMax2Min.Count; $k++)
     {    
         # log "arrDeleteValuesFromArray - $k " $showLog
+        log "arrDeleteValuesFromArray - $arrCellsMax2Min[$k] " $showLog
 
         for($i= 0; $i -lt $series; $i++)
         {
@@ -62,7 +64,7 @@ function arrDeleteValuesFromArray($arrCellsMax2Min , $series , $maxCellsPerSerie
 
                     if(!$hashControl.ContainsKey($key))
                     {
-                        # log "arrDeleteValuesFromArray - $k - $i - $j -> $key IS NOT CONTAIN" $showLog
+                        log "arrDeleteValuesFromArray - $k - $i - $j -> $key IS NOT CONTAIN" $showLog
                         
                         $hashControl.Add($key,0)
                         $arrCellsMax2Min[$k]=0
@@ -146,8 +148,10 @@ function hashMinValue($hash, $avg)
 
 function hashSumAllValuesFromArray($CellsPerSeries , $series, $maxCellsPerSerie)
 {
+    $showLog = $false
 
-    log "hashSumAllValuesFromArray -->"
+    log "hashSumAllValuesFromArray -->" $showlog
+    log "hashSumAllValuesFromArray - series: $series - maxCellsPerSerie: $($maxCellsPerSerie.Value) - CellsPerSeries : $CellsPerSeries" $showlog
 
     $hashTotalmAhPerSerie = @{}
 
@@ -157,25 +161,27 @@ function hashSumAllValuesFromArray($CellsPerSeries , $series, $maxCellsPerSerie)
 
         $hashTotalmAhPerSerie.Add($i, $($CellsPerSeries[$i,0]))
 
-        for($j=1; $j -lt $maxCellsPerSerie; $j++)
+        for($j=1; $j -lt $maxCellsPerSerie.Value; $j++)
         {
-            $cellmAh = $CellsPerSeries[$i,$j]
+            $cellmAh = [int]$CellsPerSeries[$i,$j]
             $total = [int]$hashTotalmAhPerSerie[$i]
             # Write-Host "SeriesAproach2AvgMAh: total: $total"
             # Write-Host "SeriesAproach2AvgMAh: cell mAh: $cellmAh"        
             $total += [int]$cellmAh
             # Write-Host "SeriesAproach2AvgMAh: total: $total"
+            # log "hashSumAllValuesFromArray - $i - $($total)" $showlog
             $hashTotalmAhPerSerie.Set_Item($i, $total)
         }
     }    
 
     # ForEach ($item in $hashTotalmAhPerSerie.Keys) {
-    #     Write-Host "Key = $item"
-    #     Write-Host "Value = $($hashTotalmAhPerSerie[$item])"
-    #     Write-Host '----------'
+    #     # Write-Host "Key = $item"
+    #     # Write-Host "Value = $($hashTotalmAhPerSerie[$item])"
+    #     # Write-Host '----------'
+    #     log "hashSumAllValuesFromArray - $($hashTotalmAhPerSerie[$item])" $showlog
     # }
 
-    log "hashSumAllValuesFromArray --<"
+    log "hashSumAllValuesFromArray --<" $showlog
 
     return ,$hashTotalmAhPerSerie
 }
